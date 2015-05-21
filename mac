@@ -4,184 +4,91 @@
 # Be prepared to turn your laptop (or desktop, no haters here)
 # into an awesome development machine.
 
-fancy_echo() {
-  local fmt="$1"; shift
+# creation d'une cle si necessaire 
+echo "Checking for SSH key, generating one if it doesn't exist ..."
+[[ -f ~/.ssh/id_rsa.pub ]] || ssh-keygen -t rsa
 
-  # shellcheck disable=SC2059
-  printf "\n$fmt\n" "$@"
-}
+# copy dans github
+echo "Copying public key to clipboard. Paste it into your Github account ..."
+[[ -f ~/.ssh/id_rsa.pub ]] && cat ~/.ssh/id_rsa.pub | pbcopy
+open https://github.com/settings/ssh
 
-append_to_zshrc() {
-  local text="$1" zshrc
-  local skip_new_line="${2:-0}"
+mkdir -p ~/Library/LaunchAgents # Will put startup scripts here
 
-  if [ -w "$HOME/.zshrc.local" ]; then
-    zshrc="$HOME/.zshrc.local"
-  else
-    zshrc="$HOME/.zshrc"
-  fi
+echo "Installing Redis, a good key-value database ..."
+brew install redis
+echo "Configuring Redis so that it starts at startup ..."
+REDIS_CURRENT_PLIST=~/Library/LaunchAgents/homebrew.mxcl.redis.plist
+[[ -f ~/.ssh/id_rsa.pub ]] || launchctl unload -w REDIS_CURRENT_PLIST
 
-  if ! grep -Fqs "$text" "$zshrc"; then
-    if [ "$skip_new_line" -eq 1 ]; then
-      printf "%s\n" "$text" >> "$zshrc"
-    else
-      printf "\n%s\n" "$text" >> "$zshrc"
-    fi
-  fi
-}
+REDIS_PLIST=`ls /usr/local/Cellar/redis/*/homebrew.mxcl.redis.plist | tail -1`
+echo "Copying $REDIS_PLIST to ~/Library/LaunchAgents/"
+cp $REDIS_PLIST ~/Library/LaunchAgents/ 
+launchctl load -w $REDIS_CURRENT_PLIST
 
-trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
+echo "Installing MongoDB, a good NoSQL database ..."
+brew install mongodb
+echo "Configuring MongoDB so that it starts at startup ..."
+MONGO_CURRENT_PLIST=~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist
+[[ -f ~/.ssh/id_rsa.pub ]] || launchctl unload -w $MONGO_CURRENT_PLIST
 
-set -e
-
-if [ ! -d "$HOME/.bin/" ]; then
-  mkdir "$HOME/.bin"
+MONGO_PLIST=`ls /usr/local/Cellar/mongodb/*/homebrew.mxcl.mongodb.plist | tail -1`
+echo "Copying $MONGO_PLIST to ~/Library/LaunchAgents/"
+echo "Copying $MONGO_CONFIG to /usr/local/etc/"
+cp $MONGO_PLIST ~/Library/LaunchAgents/
+if [[ ! -d /data/db ]]; then
+  echo "Need your password to sudo to create the folder /data/db"; 
+  sudo mkdir -p /data/db; 
+  sudo chown `id -u` /data/db 
 fi
+launchctl load -w $MONGO_CURRENT_PLIST 
 
-if [ ! -f "$HOME/.zshrc" ]; then
-  touch "$HOME/.zshrc"
-fi
+echo "Installing NodeJS ..."
+brew install node
 
-# shellcheck disable=SC2016
-append_to_zshrc 'export PATH="$HOME/.bin:$PATH"'
+echo "Installing ack, a good way to search through files ..."
+brew install ack
 
-case "$SHELL" in
-  */zsh) : ;;
-  *)
-    fancy_echo "Changing your shell to zsh ..."
-      chsh -s "$(which zsh)"
-    ;;
-esac
+echo "Install ssh-copy-id, because you just want to type your password once..."
+brew install ssh-copy-id
+  
+echo "Installing tmux, a good way to save project state and switch between projects ..."
+brew install tmux
 
-brew_install_or_upgrade() {
-  if brew_is_installed "$1"; then
-    if brew_is_upgradable "$1"; then
-      fancy_echo "Upgrading %s ..." "$1"
-      brew upgrade "$@"
-    else
-      fancy_echo "Already using the latest version of %s. Skipping ..." "$1"
-    fi
-  else
-    fancy_echo "Installing %s ..." "$1"
-    brew install "$@"
-  fi
-}
 
-brew_is_installed() {
-  local name="$(brew_expand_alias "$1")"
+echo "Installing automake, which is need for doing rvm install --with-gcc=clang"
+brew install automake
 
-  brew list -1 | grep -Fqx "$name"
-}
+echo "Installing RVM (Ruby Version Manager) ..."
+curl -L https://get.rvm.io | bash -s stable --ruby
+# RVM
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
 
-brew_is_upgradable() {
-  local name="$(brew_expand_alias "$1")"
 
-  ! brew outdated --quiet "$name" >/dev/null
-}
+echo "Installing $RUBY_VERSION stable and making it the default Ruby ..."
+rvm install 1.9 --with-gcc=clang
+rvm use 1.9 --default
 
-brew_tap() {
-  brew tap "$1" 2> /dev/null
-}
+echo "Installing Rails to write and run web applications ..."
+gem install rails --no-rdoc --no-ri --version '~> 3.2.21'
 
-brew_expand_alias() {
-  brew info "$1" 2>/dev/null | head -1 | awk '{gsub(/:/, ""); print $1}'
-}
+echo "Installing Bundler ..."
+gem install bundler
 
-brew_launchctl_restart() {
-  local name="$(brew_expand_alias "$1")"
-  local domain="homebrew.mxcl.$name"
-  local plist="$domain.plist"
+echo "Installing the foreman gem for serving your Rails apps in development mode ..."
+gem install foreman --no-rdoc --no-ri
 
-  fancy_echo "Restarting %s ..." "$1"
-  mkdir -p "$HOME/Library/LaunchAgents"
-  ln -sfv "/usr/local/opt/$name/$plist" "$HOME/Library/LaunchAgents"
+#empties the .zprofile (avoid conflicts for RVM)
+echo '' > ~/.zprofile 
 
-  if launchctl list | grep -Fq "$domain"; then
-    launchctl unload "$HOME/Library/LaunchAgents/$plist" >/dev/null
-  fi
-  launchctl load "$HOME/Library/LaunchAgents/$plist" >/dev/null
-}
 
-gem_install_or_update() {
-  if gem list "$1" --installed > /dev/null; then
-    fancy_echo "Updating %s ..." "$1"
-    gem update "$@"
-  else
-    fancy_echo "Installing %s ..." "$1"
-    gem install "$@"
-    rbenv rehash
-  fi
-}
+# Setting up Cornis defaults code directories
+echo "Setting up ~/code directory. That's where you gonna work buddy ..."
+mkdir -p ~/code
 
-if ! command -v brew >/dev/null; then
-  fancy_echo "Installing Homebrew ..."
-    curl -fsS \
-      'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
 
-    append_to_zshrc '# recommended by brew doctor'
+# Setting up some useful links
+echo 'alias subl="/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl"' >> ~/.zprofile 
+echo 'alias stt="subl ."' >> ~/.zprofile
 
-    # shellcheck disable=SC2016
-    append_to_zshrc 'export PATH="/usr/local/bin:$PATH"' 1
 
-    export PATH="/usr/local/bin:$PATH"
-else
-  fancy_echo "Homebrew already installed. Skipping ..."
-fi
-
-fancy_echo "Updating Homebrew formulas ..."
-brew update
-
-brew_install_or_upgrade 'git'
-brew_install_or_upgrade 'postgres'
-brew_launchctl_restart 'postgresql'
-brew_install_or_upgrade 'redis'
-brew_launchctl_restart 'redis'
-brew_install_or_upgrade 'the_silver_searcher'
-brew_install_or_upgrade 'vim'
-brew_install_or_upgrade 'ctags'
-brew_install_or_upgrade 'tmux'
-brew_install_or_upgrade 'reattach-to-user-namespace'
-brew_install_or_upgrade 'imagemagick'
-brew_install_or_upgrade 'qt'
-brew_install_or_upgrade 'hub'
-brew_install_or_upgrade 'node'
-
-brew_install_or_upgrade 'rbenv'
-brew_install_or_upgrade 'ruby-build'
-
-# shellcheck disable=SC2016
-append_to_zshrc 'eval "$(rbenv init - zsh --no-rehash)"' 1
-
-brew_install_or_upgrade 'openssl'
-brew unlink openssl && brew link openssl --force
-brew_install_or_upgrade 'libyaml'
-
-ruby_version="$(curl -sSL http://ruby.thoughtbot.com/latest)"
-
-eval "$(rbenv init - zsh)"
-
-if ! rbenv versions | grep -Fq "$ruby_version"; then
-  rbenv install -s "$ruby_version"
-fi
-
-rbenv global "$ruby_version"
-rbenv shell "$ruby_version"
-
-gem update --system
-
-gem_install_or_update 'bundler'
-
-fancy_echo "Configuring Bundler ..."
-  number_of_cores=$(sysctl -n hw.ncpu)
-  bundle config --global jobs $((number_of_cores - 1))
-
-brew_install_or_upgrade 'heroku-toolbelt'
-
-if ! command -v rcup >/dev/null; then
-  brew_tap 'thoughtbot/formulae'
-  brew_install_or_upgrade 'rcm'
-fi
-
-if [ -f "$HOME/.laptop.local" ]; then
-  . "$HOME/.laptop.local"
-fi
