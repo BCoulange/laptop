@@ -61,8 +61,10 @@ gem install rmagick
 * L'installer
 
 ## Opencv
+````
 brew tap homebrew/science
 brew install opencv
+````
 
 ## Enblend
 * le téélcharger ici : http://enblend.sourceforge.net/
