@@ -77,9 +77,10 @@ brew install R
 * Copier le fichier binaire "enblend" dans "/usr/bin"
 
 ## Pour Cornis Maps
+```
 gem uninstall libv8
 brew install v8
 gem install therubyracer
 gem install libv8 -v '3.11.8.17'  -- --with-system-v8
-
+```
 
