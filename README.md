@@ -53,8 +53,10 @@ export PATH="$PATH:${AWS_AUTO_SCALING_HOME}/bin"
 Enfin limiter les permission sur le fichier de credentials modifié : `sudo chmod 600 ~/.auto-scaling/credential-file-path.template`
 
 ## Rmagick et Imagemagick
+```
 brew install imagemagick
 gem install rmagick
+````
 
 ## Latex / générateur de rapport
 * Télécharger MacTex : http://www.tug.org/mactex/
@@ -67,7 +69,7 @@ brew install opencv
 ````
 
 ## R 
-* D'abord installer XQuartz
+* D'abord installer XQuartz : http://xquartz.macosforge.org/landing/
 ````
 brew install R
 ```
