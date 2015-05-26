@@ -30,9 +30,7 @@ Comme cela chaque tabulation correspondra à deux espaces.
 
 ## Installation des autres outlis
 
-Executer cette ligne : 
-
-`bash <(curl -s https://raw.github.com/applidget/laptop/master/mac)`
+Copier coller les lignes du ficher "mac" de ce dépot
 
 ## Note 
 * Testé seulement sous Yosemite
