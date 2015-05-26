@@ -67,6 +67,7 @@ brew install opencv
 ````
 
 ## R 
+* D'abord installer XQuartz
 ````
 brew install R
 ```
