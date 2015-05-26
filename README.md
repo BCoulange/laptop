@@ -66,6 +66,11 @@ brew tap homebrew/science
 brew install opencv
 ````
 
+## R 
+````
+brew install R
+```
+
 ## Enblend
 * le téélcharger ici : http://enblend.sourceforge.net/
 * Copier le fichier binaire "enblend" dans "/usr/bin"
