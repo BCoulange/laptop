@@ -6,7 +6,22 @@
 
 ## Logiciels pratiques
 * Bettertouchtool pour que les fenetres se redimentionnent sur les bords : http://www.bettertouchtool.net/
+* sublime text 2 pour l'éditeur de texte
 
+## Configuration de sublime text 2
+* installer le gestionnaire de paquets : https://packagecontrol.io/installation#st2
+* Une fois installer, via cmd+maj+P on peut choisir "install Package" et installer tout plein de packages (dont coffeescript)
+* Aller dans les préférences et faire les réglages suivants : 
+```
+
+    // The number of spaces a tab is considered equal to
+    "tab_size": 2,
+
+    // Set to true to insert spaces when tab is pressed
+    "translate_tabs_to_spaces": true,
+
+```
+Comme cela chaque tabulation correspondra à deux espaces.
 
 ## Prérequis
 * Installation des outils dev apple : ouvrir le terminal (appuyer sur cmd+espace pour l'outil de recherche et taper "terminal" puis entrée) et taper `gcc`. Cela devrait ouvrir une fenetre proposant une mise a jour, accepter et la lancer.
