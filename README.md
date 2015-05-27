@@ -59,10 +59,23 @@ sudo chown -R `whoami` /usr/local/share/ghostscript
 brew link ghostscript
 ```
 
+C'est parti pour installer imagemagick
 ```
-brew install imagemagick --with-ghostscript
+brew install imagemagick --with-ghostscript --with-fontconfig
+brew unlink imagemagick && brew link imagemagick
 gem install rmagick
+```
+
+Executer le bout de code suivant pour vérifier si tout s'est bien passé (dans une console ruby)
+
+```
+require "rmagick"
+include Magick
+txt = Draw.new
+img = ImageList.new('/Users/BCoulange/Downloads/41C-LjiVVuL._SY395_.jpg')
+size = txt.get_type_metrics(img,"blah")
 ``
+
 
 ## Latex / générateur de rapport
 * Télécharger MacTex : http://www.tug.org/mactex/
