@@ -51,10 +51,18 @@ export PATH="$PATH:${AWS_AUTO_SCALING_HOME}/bin"
 Enfin limiter les permission sur le fichier de credentials modifié : `sudo chmod 600 ~/.auto-scaling/credential-file-path.template`
 
 ## Rmagick et Imagemagick
+* D'abord il faut installer ghostscript
+`brew install ghostscript`
+Vérifier qu'il n'y a pas d'erreur. Si erreur de link. Si c'est le cas, faire : 
 ```
-brew install imagemagick
+sudo chown -R `whoami` /usr/local/share/ghostscript
+brew link ghostscript
+```
+
+```
+brew install imagemagick --with-ghostscript
 gem install rmagick
-````
+``
 
 ## Latex / générateur de rapport
 * Télécharger MacTex : http://www.tug.org/mactex/
