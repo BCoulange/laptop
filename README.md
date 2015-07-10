@@ -105,3 +105,13 @@ gem install therubyracer
 gem install libv8 -v '3.11.8.17'  -- --with-system-v8
 ```
 
+## Rspec
+```
+gem install rspec
+```
+
+## Json compare
+```
+gem install json-compare
+```
+
