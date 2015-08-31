@@ -74,7 +74,7 @@ include Magick
 txt = Draw.new
 img = ImageList.new('/Users/BCoulange/Downloads/41C-LjiVVuL._SY395_.jpg')
 size = txt.get_type_metrics(img,"blah")
-``
+```
 
 
 ## Latex / générateur de rapport
@@ -115,3 +115,7 @@ gem install rspec
 gem install json-compare
 ```
 
+## Yaml for python
+````
+pip install pyyaml 
+````
