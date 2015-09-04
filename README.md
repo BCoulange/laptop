@@ -115,7 +115,13 @@ gem install rspec
 gem install json-compare
 ```
 
-## Yaml for python
+## Packages for python
+Pour ouvrir les yaml :
 ````
 pip install pyyaml 
+````
+
+Pour utiliser les diagrammes de Venn :
+````
+easy_install matplotlib-venn
 ````
