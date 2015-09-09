@@ -92,3 +92,11 @@ echo 'alias subl="/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/
 echo 'alias stt="subl ."' >> ~/.zprofile
 
 
+# JSON compare
+gem install json-compare
+
+# Packages for python:
+# - to open yaml
+pip install pyyaml
+# - to use Venn diagram
+easy_install matplotlib-venn
