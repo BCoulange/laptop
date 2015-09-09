@@ -109,19 +109,3 @@ gem install libv8 -v '3.11.8.17'  -- --with-system-v8
 ```
 gem install rspec
 ```
-
-## Json compare
-```
-gem install json-compare
-```
-
-## Packages for python
-Pour ouvrir les yaml :
-````
-pip install pyyaml 
-````
-
-Pour utiliser les diagrammes de Venn :
-````
-easy_install matplotlib-venn
-````
