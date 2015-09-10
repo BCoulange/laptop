@@ -109,7 +109,7 @@ pip install "ipython[all]"
 pip install --upgrade matplotlib
 pip install --upgrade pandas
 
-
+pip install scipy
 
 # Packages for python:
 # - to open yaml
