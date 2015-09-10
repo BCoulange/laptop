@@ -95,6 +95,22 @@ echo 'alias stt="subl ."' >> ~/.zprofile
 # JSON compare
 gem install json-compare
 
+
+
+
+
+# python ipython and pandas
+brew install python
+pip install --upgrade setuptools
+pip install --upgrade pip
+
+pip install "ipython[all]"
+
+pip install --upgrade matplotlib
+pip install --upgrade pandas
+
+
+
 # Packages for python:
 # - to open yaml
 pip install pyyaml
